@@ -123,6 +123,15 @@ def main():
         plt.close(fig2)
         print("✓ Saved: results/quick_error_distribution.png")
         
+        # NEW: Add simple performance summary
+        print("Creating simple performance summary...")
+        fig3 = analyzer.plot_simple_performance_summary(
+            results,
+            save_path='results/quick_simple_summary.png'
+        )
+        plt.close(fig3)
+        print("✓ Saved: results/quick_simple_summary.png")
+        
         # Test a simple forecast
         print("\nTesting simple 7-day forecast...")
         

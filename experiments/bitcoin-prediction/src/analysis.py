@@ -341,3 +341,272 @@ class BitcoinAnalyzer:
                 f.write(report_text)
         
         return report_text
+    
+    def plot_accuracy_scorecard(
+        self,
+        metrics_dict: Dict[str, Dict[str, float]],
+        directional_metrics: Dict[str, Dict[str, float]],
+        save_path: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        Create an easy-to-understand scorecard visualization.
+        
+        Parameters
+        ----------
+        metrics_dict : Dict[str, Dict[str, float]]
+            Dictionary of metrics for different periods
+        directional_metrics : Dict[str, Dict[str, float]]
+            Dictionary of directional accuracy metrics
+        save_path : Optional[str]
+            Path to save the plot
+            
+        Returns
+        -------
+        plt.Figure
+            Matplotlib figure
+        """
+        fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+        fig.suptitle('Bitcoin Prediction Performance Scorecard', 
+                    fontsize=18, fontweight='bold', y=0.98)
+        
+        # 1. MAPE comparison across periods
+        ax1 = axes[0, 0]
+        periods = list(metrics_dict.keys())
+        mapes = [metrics_dict[p].get('mape', 0) for p in periods]
+        
+        colors = ['#06A77D' if m < 10 else '#F77F00' if m < 20 else '#D62828' 
+                 for m in mapes]
+        
+        bars1 = ax1.barh(periods, mapes, color=colors, alpha=0.7, edgecolor='black')
+        ax1.set_xlabel('MAPE (%)', fontsize=12, fontweight='bold')
+        ax1.set_title('Price Prediction Accuracy\n(Lower is Better)', 
+                     fontsize=14, fontweight='bold')
+        ax1.axvline(x=10, color='green', linestyle='--', alpha=0.5, label='Excellent (<10%)')
+        ax1.axvline(x=20, color='orange', linestyle='--', alpha=0.5, label='Good (<20%)')
+        ax1.legend(fontsize=9)
+        ax1.grid(True, alpha=0.3, axis='x')
+        
+        # Add value labels
+        for i, (bar, val) in enumerate(zip(bars1, mapes)):
+            ax1.text(val + 0.5, bar.get_y() + bar.get_height()/2, 
+                    f'{val:.1f}%', va='center', fontsize=10, fontweight='bold')
+        
+        # 2. Directional accuracy comparison
+        ax2 = axes[0, 1]
+        dir_periods = list(directional_metrics.keys())
+        accuracies = [directional_metrics[p].get('accuracy', 0) * 100 for p in dir_periods]
+        
+        colors2 = ['#06A77D' if a > 55 else '#F77F00' if a > 50 else '#D62828' 
+                  for a in accuracies]
+        
+        bars2 = ax2.barh(dir_periods, accuracies, color=colors2, alpha=0.7, edgecolor='black')
+        ax2.set_xlabel('Accuracy (%)', fontsize=12, fontweight='bold')
+        ax2.set_title('Directional Prediction Accuracy\n(Up/Down Correct)', 
+                     fontsize=14, fontweight='bold')
+        ax2.axvline(x=50, color='gray', linestyle='--', alpha=0.5, label='Random (50%)')
+        ax2.axvline(x=55, color='green', linestyle='--', alpha=0.5, label='Good (>55%)')
+        ax2.legend(fontsize=9)
+        ax2.grid(True, alpha=0.3, axis='x')
+        
+        # Add value labels
+        for i, (bar, val) in enumerate(zip(bars2, accuracies)):
+            ax2.text(val + 0.5, bar.get_y() + bar.get_height()/2, 
+                    f'{val:.1f}%', va='center', fontsize=10, fontweight='bold')
+        
+        # 3. Confidence interval coverage
+        ax3 = axes[1, 0]
+        
+        if any('coverage_80' in metrics_dict[p] for p in periods):
+            cov_80 = [metrics_dict[p].get('coverage_80', 0) * 100 for p in periods]
+            cov_95 = [metrics_dict[p].get('coverage_95', 0) * 100 for p in periods]
+            
+            x = np.arange(len(periods))
+            width = 0.35
+            
+            bars3a = ax3.bar(x - width/2, cov_80, width, label='80% Interval', 
+                           color='#F18F01', alpha=0.7, edgecolor='black')
+            bars3b = ax3.bar(x + width/2, cov_95, width, label='95% Interval', 
+                           color='#C73E1D', alpha=0.7, edgecolor='black')
+            
+            ax3.set_ylabel('Coverage (%)', fontsize=12, fontweight='bold')
+            ax3.set_title('Confidence Interval Coverage\n(Should Match Interval Level)', 
+                         fontsize=14, fontweight='bold')
+            ax3.set_xticks(x)
+            ax3.set_xticklabels(periods, rotation=45, ha='right')
+            ax3.axhline(y=80, color='orange', linestyle='--', alpha=0.5)
+            ax3.axhline(y=95, color='red', linestyle='--', alpha=0.5)
+            ax3.legend(fontsize=10)
+            ax3.grid(True, alpha=0.3, axis='y')
+            
+            # Add value labels
+            for bars in [bars3a, bars3b]:
+                for bar in bars:
+                    height = bar.get_height()
+                    ax3.text(bar.get_x() + bar.get_width()/2., height,
+                           f'{height:.0f}%', ha='center', va='bottom', fontsize=9)
+        
+        # 4. Overall performance gauge
+        ax4 = axes[1, 1]
+        ax4.axis('off')
+        
+        # Calculate overall scores
+        avg_mape = np.mean(mapes)
+        avg_accuracy = np.mean(accuracies)
+        
+        # Determine overall rating
+        if avg_mape < 10 and avg_accuracy > 55:
+            rating = "EXCELLENT ⭐⭐⭐⭐⭐"
+            rating_color = '#06A77D'
+        elif avg_mape < 15 and avg_accuracy > 52:
+            rating = "GOOD ⭐⭐⭐⭐"
+            rating_color = '#5EBB7E'
+        elif avg_mape < 20 and avg_accuracy > 50:
+            rating = "FAIR ⭐⭐⭐"
+            rating_color = '#F77F00'
+        else:
+            rating = "NEEDS IMPROVEMENT ⭐⭐"
+            rating_color = '#D62828'
+        
+        summary_text = "📊 OVERALL PERFORMANCE\n\n"
+        summary_text += f"Rating: {rating}\n\n"
+        summary_text += f"Average MAPE: {avg_mape:.1f}%\n"
+        summary_text += f"Average Directional Accuracy: {avg_accuracy:.1f}%\n\n"
+        summary_text += "━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        
+        # Add recommendations
+        summary_text += "💡 KEY INSIGHTS:\n\n"
+        
+        if avg_accuracy > 55:
+            summary_text += "✓ Good directional signals\n"
+        else:
+            summary_text += "⚠ Directional signals weak\n"
+        
+        if avg_mape < 10:
+            summary_text += "✓ Excellent price accuracy\n"
+        elif avg_mape < 20:
+            summary_text += "~ Moderate price accuracy\n"
+        else:
+            summary_text += "⚠ Use confidence intervals\n"
+        
+        summary_text += "\n━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        summary_text += "Best Use Cases:\n"
+        summary_text += "• Short-term forecasts\n"
+        summary_text += "• Risk management\n"
+        summary_text += "• Trading signals\n"
+        
+        ax4.text(0.1, 0.95, summary_text, transform=ax4.transAxes,
+                fontsize=12, verticalalignment='top', family='monospace',
+                bbox=dict(boxstyle='round', facecolor=rating_color, 
+                         alpha=0.2, edgecolor='black', linewidth=2))
+        
+        plt.tight_layout()
+        
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        
+        return fig
+    
+    def plot_simple_performance_summary(
+        self,
+        backtest_results: pd.DataFrame,
+        save_path: Optional[str] = None
+    ) -> plt.Figure:
+        """
+        Create a simple, easy-to-understand performance summary chart.
+        
+        Parameters
+        ----------
+        backtest_results : pd.DataFrame
+            DataFrame with backtesting results
+        save_path : Optional[str]
+            Path to save the plot
+            
+        Returns
+        -------
+        plt.Figure
+            Matplotlib figure
+        """
+        fig = plt.figure(figsize=(16, 10))
+        gs = fig.add_gridspec(3, 3, hspace=0.3, wspace=0.3)
+        
+        # Main accuracy visualization
+        ax_main = fig.add_subplot(gs[0:2, :])
+        
+        dates = pd.to_datetime(backtest_results['forecast_date'])
+        
+        # Calculate whether prediction was good (within 5%)
+        results = backtest_results.copy()
+        results['good_prediction'] = results['abs_pct_error'] < 5
+        
+        # Create color-coded scatter plot
+        colors = ['#06A77D' if good else '#D62828' 
+                 for good in results['good_prediction']]
+        sizes = [100 if good else 50 for good in results['good_prediction']]
+        
+        ax_main.scatter(dates, results['actual'], c=colors, s=sizes, 
+                       alpha=0.6, edgecolors='black', linewidth=1.5,
+                       label='Predictions (Green=Good, Red=Poor)')
+        
+        # Add trend line
+        ax_main.plot(dates, results['actual'], 'k--', alpha=0.3, linewidth=2)
+        
+        ax_main.set_xlabel('Date', fontsize=12, fontweight='bold')
+        ax_main.set_ylabel('Bitcoin Price (USD)', fontsize=12, fontweight='bold')
+        ax_main.set_title('Prediction Quality Over Time\n(Green dots = accurate predictions <5% error)', 
+                         fontsize=16, fontweight='bold')
+        ax_main.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'${x:,.0f}'))
+        ax_main.grid(True, alpha=0.3)
+        
+        # Bottom panels - Key metrics
+        ax1 = fig.add_subplot(gs[2, 0])
+        ax2 = fig.add_subplot(gs[2, 1])
+        ax3 = fig.add_subplot(gs[2, 2])
+        
+        # Panel 1: Win rate
+        good_preds = results['good_prediction'].sum()
+        total_preds = len(results)
+        win_rate = (good_preds / total_preds * 100) if total_preds > 0 else 0
+        
+        ax1.pie([good_preds, total_preds - good_preds], 
+               labels=['Accurate\n(<5% error)', 'Inaccurate\n(>5% error)'],
+               colors=['#06A77D', '#D62828'], autopct='%1.0f%%',
+               startangle=90, textprops={'fontsize': 11, 'fontweight': 'bold'})
+        ax1.set_title('Prediction Accuracy', fontsize=12, fontweight='bold')
+        
+        # Panel 2: Average error
+        avg_error = results['abs_pct_error'].mean()
+        median_error = results['abs_pct_error'].median()
+        
+        ax2.barh(['Average', 'Median'], [avg_error, median_error], 
+                color=['#F77F00', '#F18F01'], alpha=0.7, edgecolor='black')
+        ax2.set_xlabel('Error (%)', fontsize=11, fontweight='bold')
+        ax2.set_title('Typical Error Range', fontsize=12, fontweight='bold')
+        ax2.grid(True, alpha=0.3, axis='x')
+        
+        for i, v in enumerate([avg_error, median_error]):
+            ax2.text(v + 0.2, i, f'{v:.1f}%', va='center', fontweight='bold')
+        
+        # Panel 3: Error distribution
+        error_bins = [0, 2, 5, 10, float('inf')]
+        error_labels = ['<2%\nExcellent', '2-5%\nGood', '5-10%\nFair', '>10%\nPoor']
+        error_counts = pd.cut(results['abs_pct_error'], bins=error_bins, 
+                             labels=error_labels).value_counts()
+        
+        ax3.bar(range(len(error_counts)), error_counts.values, 
+               color=['#06A77D', '#5EBB7E', '#F77F00', '#D62828'], 
+               alpha=0.7, edgecolor='black')
+        ax3.set_xticks(range(len(error_counts)))
+        ax3.set_xticklabels(error_labels, fontsize=9)
+        ax3.set_ylabel('Count', fontsize=11, fontweight='bold')
+        ax3.set_title('Error Categories', fontsize=12, fontweight='bold')
+        ax3.grid(True, alpha=0.3, axis='y')
+        
+        for i, v in enumerate(error_counts.values):
+            ax3.text(i, v + 0.5, str(v), ha='center', fontweight='bold')
+        
+        plt.tight_layout()
+        
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        
+        return fig

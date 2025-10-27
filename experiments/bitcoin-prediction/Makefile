@@ -1,10 +1,11 @@
-.PHONY: help install test quick full clean
+.PHONY: help install test quick full weather notebook clean
 
 help:
 	@echo "Bitcoin Price Prediction Analysis - Available Commands"
 	@echo ""
 	@echo "  make install    - Install required dependencies"
 	@echo "  make test       - Test modules without API key"
+	@echo "  make weather    - Bitcoin weather forecast (requires API key) ☀️"
 	@echo "  make quick      - Run quick analysis (requires API key)"
 	@echo "  make full       - Run comprehensive analysis (requires API key)"
 	@echo "  make notebook   - Start Jupyter notebook"
@@ -23,6 +24,11 @@ install:
 test:
 	@echo "Running module tests..."
 	python test_modules.py
+
+weather:
+	@echo "Generating Bitcoin weather forecast..."
+	@echo "This will create easy-to-understand forecast charts"
+	python weather_forecast.py
 
 quick:
 	@echo "Running quick analysis..."

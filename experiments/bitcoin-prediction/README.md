@@ -51,12 +51,35 @@ make install
 # Test modules (no API key required)
 make test
 
+# Bitcoin Weather Forecast - Simple outlook with easy charts! ☀️
+make weather
+
 # Run quick analysis (requires API key, ~5 minutes)
 make quick
 
 # Run comprehensive analysis (requires API key, ~30 minutes)
 make full
 ```
+
+### Weather Forecast Tool 🌤️
+
+The weather forecast tool provides an intuitive, visual outlook for Bitcoin prices:
+
+```bash
+python weather_forecast.py
+```
+
+This generates:
+- **Weather-style forecast chart**: 7-day outlook with confidence ranges
+- **Daily predictions**: With trend indicators (📈 up, 📉 down, ➡️ flat)
+- **Probability ranges**: Visual uncertainty levels
+- **Simple bar charts**: Easy-to-understand price movements
+
+Perfect for:
+- Quick daily checks
+- Non-technical users
+- Trading decisions
+- Risk assessment
 
 ### Manual Usage
 
@@ -99,10 +122,36 @@ The script creates a `results/` directory containing:
 
 - **CSV files**: Detailed backtesting results for each period
 - **PNG files**: Visualizations including:
-  - Forecast vs Actual plots
-  - Error distribution plots
-  - Performance over time plots
+  - 📊 **Performance Scorecard**: Overall accuracy ratings and comparisons
+  - 📈 **Forecast vs Actual plots**: With confidence intervals
+  - 📉 **Error distribution plots**: Accuracy breakdown
+  - 🎯 **Simple Performance Summary**: Color-coded prediction quality
+  - 📅 **Performance over time**: Tracking accuracy trends
+  - 🌤️ **Weather Forecast Charts**: Easy-to-understand daily outlook (via weather_forecast.py)
+  - 📊 **Simple Outlook Charts**: Bar charts with uncertainty ranges
 - **analysis_report.txt**: Comprehensive summary report with findings and recommendations
+
+### New Enhanced Charts
+
+The toolkit now includes easy-to-understand visualizations:
+
+1. **Weather Forecast Style Chart**: Shows Bitcoin price outlook like a weather forecast
+   - Daily predictions with trend indicators (📈/📉/➡️)
+   - Visual confidence ranges (80%, 95%)
+   - Probability outlook
+   - Uncertainty levels (🟢🟡🔴)
+
+2. **Performance Scorecard**: At-a-glance accuracy assessment
+   - MAPE comparison across periods
+   - Directional accuracy rates
+   - Confidence interval coverage
+   - Overall rating with stars (⭐)
+
+3. **Simple Performance Summary**: Color-coded prediction quality
+   - Green dots = accurate predictions (<5% error)
+   - Red dots = inaccurate predictions (>5% error)
+   - Win rate pie chart
+   - Error category breakdown
 
 ## Analysis Components
 

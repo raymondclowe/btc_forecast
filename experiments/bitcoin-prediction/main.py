@@ -180,6 +180,13 @@ def main():
         )
         plt.close(fig3)
         
+        # NEW: Add simple performance summary chart
+        fig4 = analyzer.plot_simple_performance_summary(
+            results,
+            save_path=f"results/simple_summary_{safe_name}.png"
+        )
+        plt.close(fig4)
+        
         print(f"  Visualizations saved for: {period_name}")
     
     print()
@@ -194,6 +201,16 @@ def main():
     )
     
     print("\n" + report)
+    
+    # NEW: Generate performance scorecard
+    print("\nGenerating performance scorecard...")
+    scorecard_fig = analyzer.plot_accuracy_scorecard(
+        all_metrics,
+        all_directional,
+        save_path='results/performance_scorecard.png'
+    )
+    plt.close(scorecard_fig)
+    print("  ✓ Performance scorecard saved to: results/performance_scorecard.png")
     
     print()
     print("Analysis complete! Results saved to the 'results' directory.")
