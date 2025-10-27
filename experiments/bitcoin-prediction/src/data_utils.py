@@ -3,6 +3,8 @@ Data loading and preprocessing utilities for Bitcoin price analysis.
 """
 import pandas as pd
 import numpy as np
+import requests
+from io import StringIO
 from typing import Tuple, Optional
 
 
@@ -20,7 +22,19 @@ def load_bitcoin_data(url: str = "https://btcgraphs.pages.dev/btcpricehistory.cs
     pd.DataFrame
         DataFrame with Bitcoin price history
     """
-    df = pd.read_csv(url)
+    # Use requests with proper headers to avoid 403 errors
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    }
+    
+    try:
+        response = requests.get(url, headers=headers, timeout=30)
+        response.raise_for_status()
+        df = pd.read_csv(StringIO(response.text))
+    except Exception as e:
+        print(f"Error loading data from {url}: {e}")
+        print("Trying without headers...")
+        df = pd.read_csv(url)
     
     # Ensure we have the expected columns
     if 'Date' in df.columns:

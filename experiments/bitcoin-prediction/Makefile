@@ -1,61 +1,43 @@
-.PHONY: help install test quick full weather notebook clean opensource
+.PHONY: help install forecast backtest clean
 
 help:
-	@echo "Bitcoin Price Prediction Analysis - Available Commands"
+	@echo "Bitcoin Price Prediction - Open Source Toolkit"
+	@echo "NO API KEY REQUIRED - 100% Free and Local"
+	@echo ""
+	@echo "Available Commands:"
 	@echo ""
 	@echo "  make install      - Install required dependencies"
-	@echo "  make test         - Test modules without API key"
-	@echo "  make opensource   - Run REAL analysis with open-source models (NO API KEY!) 🔥"
-	@echo "  make weather      - Bitcoin weather forecast (requires API key) ☀️"
-	@echo "  make quick        - Run quick analysis (requires API key)"
-	@echo "  make full         - Run comprehensive analysis (requires API key)"
-	@echo "  make notebook     - Start Jupyter notebook"
+	@echo "  make forecast     - Generate actionable trading forecast (7 days) 🔥"
+	@echo "  make backtest     - Run comprehensive backtest analysis"
 	@echo "  make clean        - Clean generated results"
 	@echo ""
-	@echo "⭐ NEW: Run 'make opensource' for REAL Bitcoin predictions without API key!"
+	@echo "Quick Start:"
+	@echo "  1. make install"
+	@echo "  2. make forecast"
 	@echo ""
-	@echo "For API-based tools, set your API key:"
-	@echo "  export NIXTLA_API_KEY='your-key-here'"
-	@echo ""
-	@echo "Get your free API key at: https://dashboard.nixtla.io"
+	@echo "The forecast tool provides clear trading signals with confidence levels"
 
 install:
 	@echo "Installing dependencies..."
 	pip install -r requirements.txt
-	@echo "Done!"
+	@echo "✓ Installation complete!"
 
-test:
-	@echo "Running module tests..."
-	python test_modules.py
-
-opensource:
-	@echo "Running REAL Bitcoin analysis with open-source StatsForecast..."
-	@echo "NO API KEY REQUIRED - Uses AutoARIMA + AutoETS ensemble"
+forecast:
+	@echo "Generating actionable Bitcoin trading forecast..."
+	@echo "Using open-source StatsForecast (AutoARIMA + AutoETS)"
 	@echo ""
-	python main_opensources.py
+	python trading_forecast.py
 
-weather:
-	@echo "Generating Bitcoin weather forecast..."
-	@echo "This will create easy-to-understand forecast charts"
-	python weather_forecast.py
-
-quick:
-	@echo "Running quick analysis..."
-	@echo "This will make a few API calls to TimeGPT"
-	python quick_analysis.py
-
-full:
-	@echo "Running comprehensive analysis..."
-	@echo "This will make multiple API calls to TimeGPT"
+backtest:
+	@echo "Running comprehensive backtest analysis..."
+	@echo "This will test prediction accuracy on historical data"
+	@echo ""
 	python main.py
-
-notebook:
-	@echo "Starting Jupyter notebook..."
-	jupyter notebook bitcoin_analysis.ipynb
 
 clean:
 	@echo "Cleaning results..."
 	rm -rf results/
+	rm -f trading_forecast.csv
 	rm -rf __pycache__/
 	rm -rf src/__pycache__/
-	@echo "Done!"
+	@echo "✓ Cleanup complete!"

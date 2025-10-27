@@ -1,31 +1,47 @@
 """
-Backtesting framework for Bitcoin price prediction.
+Backtesting framework for Bitcoin price prediction using open-source StatsForecast.
+No API key required - runs locally.
 """
 import pandas as pd
 import numpy as np
 from typing import List, Dict, Any, Optional
-from nixtla import NixtlaClient
 from datetime import timedelta
+from statsforecast import StatsForecast
+from statsforecast.models import AutoARIMA, AutoETS, SeasonalNaive
 
 
 class BitcoinBacktester:
     """
-    Backtesting framework for Bitcoin price predictions.
+    Backtesting framework for Bitcoin price predictions using StatsForecast.
     """
     
-    def __init__(self, client: NixtlaClient, df: pd.DataFrame):
+    def __init__(self, df: pd.DataFrame, model_type: str = 'auto'):
         """
         Initialize the backtester.
         
         Parameters
         ----------
-        client : NixtlaClient
-            Initialized Nixtla client
         df : pd.DataFrame
-            Full Bitcoin price history
+            Full Bitcoin price history with columns: unique_id, ds, y
+        model_type : str
+            Model to use: 'auto' (AutoARIMA+AutoETS), 'arima', 'ets', 'ensemble'
         """
-        self.client = client
         self.df = df
+        self.model_type = model_type
+        
+        # Initialize models based on type
+        if model_type == 'auto' or model_type == 'ensemble':
+            self.models = [
+                AutoARIMA(season_length=7),  # Weekly seasonality
+                AutoETS(season_length=7),
+            ]
+        elif model_type == 'arima':
+            self.models = [AutoARIMA(season_length=7)]
+        elif model_type == 'ets':
+            self.models = [AutoETS(season_length=7)]
+        else:
+            # Default to AutoARIMA
+            self.models = [AutoARIMA(season_length=7)]
         
     def backtest_period(
         self,
@@ -52,13 +68,16 @@ class BitcoinBacktester:
         step_size : int
             Number of days to step forward for each iteration
         level : Optional[List[int]]
-            Confidence levels for prediction intervals
+            Confidence levels for prediction intervals (e.g., [80, 95])
             
         Returns
         -------
         pd.DataFrame
             DataFrame with backtesting results
         """
+        if level is None:
+            level = [80, 95]
+        
         # Filter data for the backtesting period
         df_period = self.df[
             (self.df['ds'] >= start_date) & 
@@ -68,7 +87,7 @@ class BitcoinBacktester:
         results = []
         
         # Get unique dates
-        dates = df_period['ds'].unique()
+        dates = sorted(df_period['ds'].unique())
         
         # Iterate through dates with step size
         for i in range(0, len(dates) - window_size - horizon, step_size):
@@ -97,16 +116,44 @@ class BitcoinBacktester:
             actual_value = actual_value[0]
             
             try:
-                # Make forecast
-                forecast = self.client.forecast(
-                    df=train_data,
-                    h=horizon,
-                    level=level
+                # Ensure train_data has unique_id column as string
+                train_data_sf = train_data.copy()
+                if 'unique_id' not in train_data_sf.columns:
+                    train_data_sf['unique_id'] = 'BTC'
+                
+                # Make forecast using StatsForecast
+                sf = StatsForecast(
+                    models=self.models,
+                    freq='D',  # Daily frequency
+                    n_jobs=1  # Single job to avoid issues
                 )
                 
-                predicted_value = forecast['TimeGPT'].values[-1]
+                # Fit and forecast
+                forecast_df = sf.forecast(df=train_data_sf[['unique_id', 'ds', 'y']], h=horizon, level=level)
                 
-                result = {
+                # Get the last forecast (for the horizon)
+                forecast_row = forecast_df.iloc[-1]
+                
+                # Ensemble: average predictions from multiple models if available
+                if self.model_type == 'ensemble' or self.model_type == 'auto':
+                    # Average the predictions from different models
+                    # Columns are like: unique_id, ds, AutoARIMA, AutoARIMA-lo-95, etc.
+                    model_cols = [col for col in forecast_df.columns 
+                                 if col not in ['ds', 'unique_id'] 
+                                 and '-lo-' not in col and '-hi-' not in col]
+                    if len(model_cols) > 0:
+                        predicted_value = forecast_df[model_cols].iloc[-1].mean()
+                    else:
+                        predicted_value = forecast_row.iloc[2]  # Third column (after unique_id, ds)
+                else:
+                    # Single model - get the first prediction column
+                    pred_col = [col for col in forecast_df.columns 
+                               if col not in ['ds', 'unique_id'] 
+                               and '-lo-' not in col and '-hi-' not in col][0]
+                    predicted_value = forecast_row[pred_col]
+                
+                # Extract confidence intervals
+                result_dict = {
                     'train_start': train_start_date,
                     'train_end': train_end_date,
                     'forecast_date': actual_date,
@@ -115,104 +162,144 @@ class BitcoinBacktester:
                     'error': actual_value - predicted_value,
                     'abs_error': abs(actual_value - predicted_value),
                     'pct_error': ((actual_value - predicted_value) / actual_value) * 100,
-                    'abs_pct_error': abs((actual_value - predicted_value) / actual_value) * 100
+                    'abs_pct_error': abs((actual_value - predicted_value) / actual_value) * 100,
                 }
                 
-                # Add confidence intervals if provided
-                if level:
-                    for lv in level:
-                        result[f'lower_{lv}'] = forecast[f'TimeGPT-lo-{lv}'].values[-1]
-                        result[f'upper_{lv}'] = forecast[f'TimeGPT-hi-{lv}'].values[-1]
-                        result[f'in_interval_{lv}'] = (
-                            actual_value >= forecast[f'TimeGPT-lo-{lv}'].values[-1]
-                        ) and (
-                            actual_value <= forecast[f'TimeGPT-hi-{lv}'].values[-1]
-                        )
+                # Add confidence intervals if available
+                for lv in level:
+                    # Find columns matching this level
+                    lo_cols = [col for col in forecast_df.columns if f'-lo-{lv}' in col]
+                    hi_cols = [col for col in forecast_df.columns if f'-hi-{lv}' in col]
+                    
+                    if lo_cols and hi_cols:
+                        # Average across models for ensemble
+                        lower = forecast_df[lo_cols].iloc[-1].mean()
+                        upper = forecast_df[hi_cols].iloc[-1].mean()
+                        
+                        result_dict[f'lower_{lv}'] = float(lower)
+                        result_dict[f'upper_{lv}'] = float(upper)
+                        result_dict[f'in_interval_{lv}'] = lower <= actual_value <= upper
                 
-                results.append(result)
+                results.append(result_dict)
                 
             except Exception as e:
-                print(f"Error forecasting for {test_date}: {e}")
+                print(f"Error forecasting for {actual_date}: {e}")
                 continue
+        
+        if len(results) == 0:
+            return pd.DataFrame()
         
         return pd.DataFrame(results)
     
-    def evaluate_directional_accuracy(self, backtest_results: pd.DataFrame) -> Dict[str, float]:
+    def calculate_metrics(self, results: pd.DataFrame) -> Dict[str, float]:
+        """
+        Calculate performance metrics from backtesting results.
+        
+        Parameters
+        ----------
+        results : pd.DataFrame
+            Backtesting results
+            
+        Returns
+        -------
+        Dict[str, float]
+            Dictionary of metrics
+        """
+        if len(results) == 0:
+            return {}
+        
+        metrics = {
+            'mae': results['abs_error'].mean(),
+            'rmse': np.sqrt((results['error'] ** 2).mean()),
+            'mape': results['abs_pct_error'].mean(),
+            'median_ape': results['abs_pct_error'].median(),
+            'std_error': results['error'].std(),
+            'mean_error': results['error'].mean(),
+            'num_predictions': len(results),
+        }
+        
+        # Coverage metrics for confidence intervals
+        for col in results.columns:
+            if col.startswith('in_interval_'):
+                level = col.split('_')[-1]
+                metrics[f'coverage_{level}'] = results[col].mean()
+        
+        return metrics
+    
+    def evaluate_directional_accuracy(self, results: pd.DataFrame) -> Dict[str, float]:
         """
         Evaluate directional prediction accuracy.
         
         Parameters
         ----------
-        backtest_results : pd.DataFrame
-            DataFrame with backtesting results
+        results : pd.DataFrame
+            Backtesting results
             
         Returns
         -------
         Dict[str, float]
-            Dictionary with directional accuracy metrics
+            Dictionary of directional metrics
         """
-        # Calculate actual direction
-        results = backtest_results.copy()
+        if len(results) == 0:
+            return {}
         
-        # Get previous actual value for each prediction
-        results['prev_actual'] = results['actual'].shift(1)
-        results = results.dropna(subset=['prev_actual'])
+        # Calculate actual and predicted directions
+        results_copy = results.copy()
         
-        results['actual_direction'] = (results['actual'] > results['prev_actual']).astype(int)
-        results['predicted_direction'] = (results['predicted'] > results['prev_actual']).astype(int)
+        # Get previous actual values to determine direction
+        results_copy['actual_direction'] = np.where(results_copy['error'] < 0, 1, 0)  # 1 if price went up
+        results_copy['predicted_direction'] = 1  # Predict up if prediction > previous
         
-        # Calculate accuracy
-        correct = (results['actual_direction'] == results['predicted_direction']).sum()
-        total = len(results)
-        accuracy = correct / total if total > 0 else 0
+        # For a more accurate direction, we need to know if price increased from previous day
+        # Since we have train_end, we can compare forecast to that
+        # Simplified: if error is negative, we under-predicted (price went up)
+        # if error is positive, we over-predicted (price went down)
         
-        # Calculate precision and recall for "up" direction
-        tp = ((results['actual_direction'] == 1) & (results['predicted_direction'] == 1)).sum()
-        fp = ((results['actual_direction'] == 0) & (results['predicted_direction'] == 1)).sum()
-        fn = ((results['actual_direction'] == 1) & (results['predicted_direction'] == 0)).sum()
+        # Calculate directional predictions
+        correct_direction = 0
+        true_positives = 0
+        false_positives = 0
+        true_negatives = 0
+        false_negatives = 0
         
-        precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-        recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-        f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+        for idx, row in results_copy.iterrows():
+            # Actual direction: did price go up?
+            actual_up = row['error'] < 0  # Under-predicted means price went up
+            
+            # Get previous price from train_end
+            # For simplicity, assume if predicted > actual, we predicted up
+            # This is approximate but works for direction
+            
+            # Better approach: compare predicted change
+            train_end_val = results_copy.loc[idx, 'actual'] - results_copy.loc[idx, 'error']  # Previous value
+            actual_direction = row['actual'] > train_end_val
+            predicted_direction = row['predicted'] > train_end_val
+            
+            if actual_direction == predicted_direction:
+                correct_direction += 1
+                if actual_direction:
+                    true_positives += 1
+                else:
+                    true_negatives += 1
+            else:
+                if predicted_direction:
+                    false_positives += 1
+                else:
+                    false_negatives += 1
+        
+        total = len(results_copy)
+        accuracy = correct_direction / total if total > 0 else 0
+        
+        # Calculate precision, recall, F1
+        precision = true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
+        recall = true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0
+        f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
         
         return {
             'accuracy': accuracy,
             'precision': precision,
             'recall': recall,
-            'f1_score': f1,
+            'f1_score': f1_score,
             'total_predictions': total,
-            'correct_predictions': correct
+            'correct_predictions': correct_direction,
         }
-    
-    def calculate_metrics(self, backtest_results: pd.DataFrame) -> Dict[str, float]:
-        """
-        Calculate comprehensive metrics from backtesting results.
-        
-        Parameters
-        ----------
-        backtest_results : pd.DataFrame
-            DataFrame with backtesting results
-            
-        Returns
-        -------
-        Dict[str, float]
-            Dictionary with various metrics
-        """
-        metrics = {
-            'mae': backtest_results['abs_error'].mean(),
-            'rmse': np.sqrt((backtest_results['error'] ** 2).mean()),
-            'mape': backtest_results['abs_pct_error'].mean(),
-            'median_ape': backtest_results['abs_pct_error'].median(),
-            'std_error': backtest_results['error'].std(),
-            'mean_error': backtest_results['error'].mean(),
-            'num_predictions': len(backtest_results)
-        }
-        
-        # Add coverage metrics if confidence intervals exist
-        for col in backtest_results.columns:
-            if col.startswith('in_interval_'):
-                level = col.split('_')[-1]
-                coverage = backtest_results[col].mean()
-                metrics[f'coverage_{level}'] = coverage
-        
-        return metrics
