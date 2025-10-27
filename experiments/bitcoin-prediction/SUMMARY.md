@@ -173,7 +173,7 @@ Short-term forecasts consistently outperform long-term across all periods.
 
 ### Dependencies
 - `nixtla>=0.7.0`: TimeGPT API client
-- `pandas>=2.0.0`: Data manipulation
+- `pandas>=1.5.0`: Data manipulation
 - `numpy`: Numerical computations
 - `matplotlib`, `seaborn`: Visualization
 - `scikit-learn`: Metrics calculation

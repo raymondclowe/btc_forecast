@@ -45,9 +45,8 @@ Thank you for your interest in improving this Bitcoin prediction analysis toolki
 
 ## Development Setup
 
-1. Clone the repository:
+1. Navigate to the experiment directory:
 ```bash
-git clone https://github.com/Nixtla/nixtla.git
 cd nixtla/experiments/bitcoin-prediction
 ```
 
