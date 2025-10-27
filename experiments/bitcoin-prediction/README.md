@@ -40,7 +40,27 @@ You can get a free API key at: https://dashboard.nixtla.io
 
 ## Usage
 
-### Run the Complete Analysis
+### Quick Start with Makefile
+
+The easiest way to use this analysis is with the provided Makefile:
+
+```bash
+# Install dependencies
+make install
+
+# Test modules (no API key required)
+make test
+
+# Run quick analysis (requires API key, ~5 minutes)
+make quick
+
+# Run comprehensive analysis (requires API key, ~30 minutes)
+make full
+```
+
+### Manual Usage
+
+#### Run the Complete Analysis
 
 ```bash
 python main.py
@@ -52,6 +72,26 @@ This will:
 - Generate performance metrics
 - Create visualizations
 - Produce a comprehensive report
+
+#### Run Quick Analysis
+
+For a faster analysis with fewer API calls:
+
+```bash
+python quick_analysis.py
+```
+
+This runs a single backtesting period and generates a 7-day forecast.
+
+#### Test Modules
+
+To test the data loading and processing modules without requiring an API key:
+
+```bash
+python test_modules.py
+```
+
+This validates that all data processing functions work correctly.
 
 ### Output
 
