@@ -53,6 +53,9 @@ def load_bitcoin_data(url: str = "https://btcgraphs.pages.dev/btcpricehistory.cs
     # Sort by date
     df = df.sort_values('ds').reset_index(drop=True)
     
+    # Remove duplicate dates (keep last value for each date)
+    df = df.drop_duplicates(subset=['ds'], keep='last').reset_index(drop=True)
+    
     # Add unique_id for compatibility with TimeGPT
     df['unique_id'] = 'BTC'
     
