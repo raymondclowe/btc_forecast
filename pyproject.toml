@@ -3,122 +3,28 @@ requires = ["setuptools>=36.2", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "nixtla"
-dynamic = ["version"]
-description = "Python SDK for Nixtla API (TimeGPT)"
+name = "btc_forecast"
+version = "0.1.0"
+description = "Bitcoin price forecasting using StatsForecast"
 authors = [
-    {name = "Nixtla", email = "business@nixtla.io"}
+    {name = "Bitcoin Forecast Contributors"}
 ]
-license = {text = "Apache Software License 2.0"}
+license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.9"
-keywords = ["time-series", "forecasting", "gpt"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "Natural Language :: English",
-    "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-]
 dependencies = [
-    "annotated-types",
-    "httpx[zstd]",
-    "joblib>=1.5.2",
     "matplotlib>=3.9.4",
-    "numba>=0.60.0",
     "numpy>=1.26.4",
-    "orjson",
     "pandas",
-    "pydantic>=1.10",
     "requests>=2.32.5",
-    "scikit-learn>=1.6.1",
     "scipy>=1.13.1",
     "seaborn>=0.13.2",
     "statsforecast>=2.0.2",
     "tabulate>=0.9.0",
-    "tenacity",
-    "tqdm",
-    "utilsforecast>=0.2.8",
 ]
-
-[tool.setuptools.dynamic]
-version = {attr = "nixtla.__version__"}
-
-[project.optional-dependencies]
-dev = [
-    "black",
-    "datasetsforecast",
-    "fire",
-    "hierarchicalforecast",
-    "ipython<=8.32.0",
-    "ipywidgets",
-    "jupyterlab",
-    "neuralforecast",
-    "numpy<2",
-    "plotly",
-    "polars",
-    "pre-commit",
-    "pyreadr<0.5.3",
-    "python-dotenv",
-    "pyyaml",
-    "setuptools<70",
-    "statsforecast",
-    "tabulate",
-    "shap",
-    "pytest",
-    "pytest-cov",
-    "pytest-rerunfailures",
-    "pyarrow<21.0.0",
-    "mlforecast",
-    "lightgbm",
-    "utilsforecast[plotting]",
-    "holidays",
-    "pandas_market_calendars",
-]
-distributed = [
-    "fugue[dask,ray,spark]>=0.8.7",
-    "dask<=2024.12.1",
-    "pandas<2.2",
-    "ray<=2.20.0",
-]
-plotting = [
-    "utilsforecast[plotting]",
-]
-date_extras = [
-    "holidays",
-    "pandas_market_calendars",
-]
-
-[project.urls]
-Homepage = "https://github.com/Nixtla/nixtla/"
-Documentation = "https://nixtlaverse.nixtla.io/"
-Repository = "https://github.com/Nixtla/nixtla/"
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-exclude = ["action_files*"]
-
-[tool.ruff.lint]
-select = [
-    "F",  # pyflakes
-]
-
-[tool.pytest.ini_options]
-markers = [
-    "distributed_run: mark test as requiring distributed run, such as those depending on Ray, Spark frameworks",
-    "spark_run: mark test execution related to Spark framework",
-    "ray_run: mark test execution related to Ray framework",
-]
-testpaths = ["nixtla_tests"]
-addopts = [
-    "--cov=python/statsforecast",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-fail-under=80"
-]
+where = ["experiments/bitcoin-prediction"]
