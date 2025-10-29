@@ -1,0 +1,47 @@
+name: Copilot Setup Steps
+
+# This workflow runs before GitHub Copilot agent starts
+# It sets up the environment with required tools and dependencies
+
+on:
+  workflow_dispatch: # Can be manually triggered for testing
+  
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    
+    # Restrict permissions to minimum required (security best practice)
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      
+      - name: Verify uv installation
+        run: |
+          uv --version
+      
+      - name: Sync dependencies with uv
+        run: |
+          uv sync
+      
+      - name: Verify pytest is available
+        run: |
+          uv run pytest --version
+      
+      - name: Run single smoke test to validate pytest
+        run: |
+          uv run pytest -q tests/test_smoke.py --tb=short || true
+        # Run just a single fast smoke test so this setup step stays quick
+        # We still allow failure (|| true) because some downstream tests depend on secrets

@@ -1,3 +1,0 @@
-nixtla>=0.6
-nixtlats==0.5.2
-pandas
