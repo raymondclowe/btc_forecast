@@ -1,5 +1,0 @@
-format:
-  mintlify-md:
-    code-fold: true
-project:
-  type: mintlify
