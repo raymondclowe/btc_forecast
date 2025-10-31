@@ -118,6 +118,32 @@ Generates:
 - `results/performance_scorecard_*.png` - Metrics summary
 - `results/report_*.txt` - Detailed analysis
 
+### 4-Year Backtesting Tool
+
+Comprehensive model accuracy evaluation over the last 4 years:
+
+```bash
+uv run experiments/bitcoin-prediction/backtest_4year.py
+# or from the bitcoin-prediction directory:
+# make backtest-4year
+```
+
+This runs a walk-forward backtesting analysis specifically on the last 4 years of Bitcoin data, providing:
+
+- **Comprehensive metrics**: MAE, RMSE, MAPE, directional accuracy
+- **Overall performance score**: Weighted score combining price accuracy, directional accuracy, and calibration
+- **Detailed report**: Full analysis with interpretation and recommendations
+- **Visualizations**: Forecast vs actual, error distribution, performance summary
+
+**Output files:**
+- `results/backtest_4year_results.csv` - Raw prediction data
+- `results/backtest_4year_report.txt` - Comprehensive text report
+- `results/forecast_vs_actual_4year.png` - Visual comparison chart
+- `results/error_distribution_4year.png` - Error analysis chart
+- `results/simple_summary_4year.png` - Performance summary chart
+
+**Why 4 years?** Early Bitcoin behavior was significantly different. Testing on the last 4 years provides more relevant accuracy metrics for current market conditions.
+
 ---
 
 ## How It Works
