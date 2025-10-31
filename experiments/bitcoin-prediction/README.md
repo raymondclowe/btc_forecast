@@ -78,14 +78,11 @@ The tool tells you exactly what to do:
 
 ## Installation
 
-```bash
-cd experiments/bitcoin-prediction
-make install
-```
+Dependencies are managed by uv (the project uses pyproject.toml).
 
 **Requirements:**
-- Python 3.8+
-- pandas, numpy, matplotlib, statsforecast
+- Python 3.9+
+- uv package manager
 - Internet connection (to download Bitcoin price data)
 
 **No API keys, no accounts, no costs!**
@@ -99,7 +96,9 @@ make install
 Get actionable 7-day forecast:
 
 ```bash
-make forecast
+uv run experiments/bitcoin-prediction/trading_forecast.py
+# or from the bitcoin-prediction directory:
+# make forecast
 ```
 
 Output saved to `trading_forecast.csv` for further analysis.
@@ -109,7 +108,9 @@ Output saved to `trading_forecast.csv` for further analysis.
 Test prediction accuracy:
 
 ```bash
-make backtest
+uv run experiments/bitcoin-prediction/main.py
+# or from the bitcoin-prediction directory:
+# make backtest
 ```
 
 Generates:
@@ -174,15 +175,12 @@ Bitcoin price history from: https://btcgraphs.pages.dev/btcpricehistory.csv
 bitcoin-prediction/
 ├── trading_forecast.py      # Main tool - actionable trading signals
 ├── main.py                   # Backtest analysis
-├── requirements.txt          # Dependencies
 ├── Makefile                  # Easy commands
 ├── src/
 │   ├── data_utils.py        # Data loading
 │   ├── backtesting.py       # Backtesting framework
 │   └── analysis.py          # Visualization tools
-├── REAL_RESULTS.md          # Proven performance results
-├── SUMMARY.md               # Detailed findings
-└── CHART_GALLERY.md         # Visual guide
+└── REAL_RESULTS.md          # Proven performance results
 ```
 
 ---
@@ -243,7 +241,7 @@ The tool provides statistical analysis based on historical patterns. Market cond
 
 ## Contributing
 
-See `CONTRIBUTING.md` for guidelines on:
+Contributions are welcome! Consider improvements to:
 - Adding new models
 - Improving confidence calculations
 - Enhancing visualizations
@@ -261,33 +259,11 @@ This project is open source and available under the MIT License.
 
 For issues or questions:
 1. Check `REAL_RESULTS.md` for performance details
-2. See `CHART_GALLERY.md` for visualization guide
-3. Review `SUMMARY.md` for methodology
-4. Open an issue on GitHub
+2. Open an issue on GitHub
 
 ---
 
 **Built with ❤️ using open-source tools. No API keys, no costs, full transparency.**
-
-### Weather Forecast Tool 🌤️
-
-The weather forecast tool provides an intuitive, visual outlook for Bitcoin prices:
-
-```bash
-python weather_forecast.py
-```
-
-This generates:
-- **Weather-style forecast chart**: 7-day outlook with confidence ranges
-- **Daily predictions**: With trend indicators (📈 up, 📉 down, ➡️ flat)
-- **Probability ranges**: Visual uncertainty levels
-- **Simple bar charts**: Easy-to-understand price movements
-
-Perfect for:
-- Quick daily checks
-- Non-technical users
-- Trading decisions
-- Risk assessment
 
 ### Manual Usage
 
