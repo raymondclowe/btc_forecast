@@ -20,6 +20,14 @@ Run comprehensive backtesting analysis on historical data:
 uv run experiments/bitcoin-prediction/main.py
 ```
 
+### 4-Year Backtesting
+
+Evaluate model accuracy over the last 4 years with detailed metrics:
+
+```bash
+uv run experiments/bitcoin-prediction/backtest_4year.py
+```
+
 ## Requirements
 
 - Python 3.9+
