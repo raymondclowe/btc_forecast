@@ -1,0 +1,6 @@
+- you have amnedia
+- use the MY-MEMORIES.md to record your state so that next run you will remember who you are and what you are doing
+- be consise; less prose, more bullet points. 
+- Sacrafice grammer and politeness of briefness and clarity.
+- Save important learnings into LEARNINGS.md to avoid reinventing the wheel or making same mistakes repeatedly
+- Check LEARNINGS.md before asking for help or searching online
