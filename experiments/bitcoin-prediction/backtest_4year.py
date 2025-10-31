@@ -1,5 +1,5 @@
 """
-4-Year Backtesting Tool for BTCUSD Model Accuracy
+4-Year Backtesting Tool for BTC/USD Model Accuracy
 
 This tool performs comprehensive backtesting of Bitcoin price predictions
 over the last 4 years only (as requested in the issue). It uses a walk-forward
@@ -45,6 +45,7 @@ def main():
     # Step 2: Filter to last 4 years only (as per requirement)
     print("Step 2: Filtering data to last 4 years...")
     latest_date = df['ds'].max()
+    # Use 4*365 as approximation for 4 years (close enough for this purpose)
     four_years_ago = latest_date - timedelta(days=4*365)
     
     df_4year = df[df['ds'] >= four_years_ago].copy()
@@ -167,7 +168,9 @@ def main():
     
     # Custom scoring based on multiple metrics
     # Weight different aspects of performance
-    mape_score = max(0, 100 - metrics['mape'] * 10)  # Lower MAPE is better
+    # MAPE scoring: 10% error = 0 points, 0% error = 100 points (linear scale)
+    MAPE_PENALTY_FACTOR = 10  # Each 1% MAPE reduces score by 10 points
+    mape_score = max(0, 100 - metrics['mape'] * MAPE_PENALTY_FACTOR)
     direction_score = directional['accuracy'] * 100
     coverage_score = metrics.get('coverage_95', 0) * 100
     
