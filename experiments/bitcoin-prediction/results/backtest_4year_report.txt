@@ -1,0 +1,80 @@
+================================================================================
+BITCOIN PRICE PREDICTION - 4-YEAR BACKTESTING REPORT
+================================================================================
+
+Generated: 2025-11-01 00:54:56
+
+OVERVIEW
+--------------------------------------------------------------------------------
+Time Period:          2021-11-01 to 2025-10-31
+Total Days:           1424
+Predictions Made:     178
+Model:                AutoARIMA + AutoETS Ensemble (StatsForecast)
+Forecast Horizon:     1 day ahead
+Training Window:      180 days (rolling)
+
+ACCURACY METRICS
+--------------------------------------------------------------------------------
+Mean Absolute Error (MAE):              $898.59
+Root Mean Square Error (RMSE):          $1,374.55
+Mean Absolute Percentage Error (MAPE):  1.59%
+Median Absolute Percentage Error:       1.09%
+Standard Deviation of Error:            $1,370.05
+Mean Error (Bias):                      $151.31
+
+DIRECTIONAL ACCURACY
+--------------------------------------------------------------------------------
+Direction Accuracy:    42.13%
+Precision:             0.00%
+Recall:                0.00%
+F1 Score:              0.00%
+Correct Predictions:   75/178
+
+CONFIDENCE INTERVALS
+--------------------------------------------------------------------------------
+80% Interval Coverage: 86.52%
+95% Interval Coverage: 95.51%
+
+OVERALL PERFORMANCE SCORE
+--------------------------------------------------------------------------------
+Price Accuracy Score:      84.1/100
+Direction Accuracy Score:  42.1/100
+Calibration Score:         95.5/100
+
+OVERALL SCORE:             69.6/100
+Rating:                    ⭐⭐⭐ GOOD
+
+INTERPRETATION
+--------------------------------------------------------------------------------
+✓ Excellent price prediction accuracy (MAPE < 5%)
+⚠ Directional accuracy not better than random
+✓ Well-calibrated confidence intervals (95% coverage > 90%)
+
+KEY FINDINGS
+--------------------------------------------------------------------------------
+Over the past 4 years, the model achieved 1.59% average
+prediction error. The model correctly predicted price direction
+42.1% of the time, which is
+approximately at random guessing level (50%).
+
+The model shows particular strength in:
+- Accurate price level predictions (low MAPE)
+- Well-calibrated uncertainty estimates
+
+RECOMMENDATIONS
+--------------------------------------------------------------------------------
+1. Use the model as ONE input to trading decisions
+2. Combine with other technical/fundamental analysis
+3. Pay attention to confidence intervals for risk management
+4. Consider market conditions and external factors
+5. Use proper position sizing based on confidence levels
+
+DISCLAIMER
+--------------------------------------------------------------------------------
+This backtesting is based on historical data and does not guarantee
+future performance. Cryptocurrency trading involves substantial risk.
+Past performance is not indicative of future results.
+
+================================================================================
+END OF REPORT
+================================================================================

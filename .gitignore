@@ -32,6 +32,10 @@ nbs/_extensions
 !nbs/assets/*
 results/
 
+# But DO include live forecast outputs (for issue: live and commit reports and graphs)
+!experiments/bitcoin-prediction/trading_forecast.csv
+!experiments/bitcoin-prediction/results/
+
 # VSCode
 *.code-workspace
 

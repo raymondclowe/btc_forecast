@@ -1,0 +1,183 @@
+================================================================================
+Bitcoin Price Prediction Analysis - Open Source (StatsForecast)
+NO API KEY REQUIRED
+================================================================================
+
+Step 1: Loading Bitcoin price data...
+✓ Loaded 5530 days of Bitcoin price history
+  Date range: 2010-07-18 to 2025-10-31
+  Price range: $0.10 to $124658.54
+
+Step 2: Initializing StatsForecast models...
+  Using: AutoARIMA + AutoETS (ensemble)
+
+Step 3: Running backtests across different market periods...
+
+Analyzing: Recent Period (Last 90 days)
+  Date range: 2025-07-03 to 2025-10-31
+  Horizon: 1 day(s)
+  Training window: 90 days
+  Results saved to: results/backtest_Recent_Period_Last_90_days.csv
+  MAPE: 1.87%
+  Directional Accuracy: 56.67%
+  Number of predictions: 30
+
+Analyzing: Mid-term (6 months ago)
+  Date range: 2025-03-05 to 2025-07-03
+  Horizon: 1 day(s)
+  Training window: 90 days
+  Results saved to: results/backtest_Mid-term_6_months_ago.csv
+  MAPE: 1.21%
+  Directional Accuracy: 53.33%
+  Number of predictions: 30
+
+
+Step 4: Generating visualizations...
+  Visualizations saved for: Recent Period (Last 90 days)
+  Visualizations saved for: Mid-term (6 months ago)
+
+Step 5: Generating performance scorecard...
+  ✓ Performance scorecard saved to: results/performance_scorecard.png
+
+Step 6: Generating comprehensive report...
+
+================================================================================
+Bitcoin Price Prediction Analysis Report
+Using TimeGPT (Nixtla)
+================================================================================
+
+## Backtesting Summary
+
+### Recent Period (Last 90 days)
+
++-----------------+---------+
+| Metric          | Value   |
++=================+=========+
+| mae             | 2131.50 |
++-----------------+---------+
+| rmse            | 2780.69 |
++-----------------+---------+
+| mape            | 1.87    |
++-----------------+---------+
+| median_ape      | 1.45    |
++-----------------+---------+
+| std_error       | 2794.68 |
++-----------------+---------+
+| mean_error      | -427.01 |
++-----------------+---------+
+| num_predictions | 30      |
++-----------------+---------+
+| coverage_80     | 66.67%  |
++-----------------+---------+
+| coverage_95     | 83.33%  |
++-----------------+---------+
+
+### Mid-term (6 months ago)
+
++-----------------+---------+
+| Metric          | Value   |
++=================+=========+
+| mae             | 1280.93 |
++-----------------+---------+
+| rmse            | 1837.31 |
++-----------------+---------+
+| mape            | 1.21    |
++-----------------+---------+
+| median_ape      | 0.89    |
++-----------------+---------+
+| std_error       | 1868.22 |
++-----------------+---------+
+| mean_error      | 42.33   |
++-----------------+---------+
+| num_predictions | 30      |
++-----------------+---------+
+| coverage_80     | 76.67%  |
++-----------------+---------+
+| coverage_95     | 93.33%  |
++-----------------+---------+
+
+## Directional Prediction Accuracy
+
+### Recent Period (Last 90 days)
+
++---------------------+---------+
+| Metric              | Value   |
++=====================+=========+
+| accuracy            | 56.67%  |
++---------------------+---------+
+| precision           | 0.00%   |
++---------------------+---------+
+| recall              | 0.00%   |
++---------------------+---------+
+| f1_score            | 0.00%   |
++---------------------+---------+
+| total_predictions   | 30      |
++---------------------+---------+
+| correct_predictions | 17      |
++---------------------+---------+
+
+### Mid-term (6 months ago)
+
++---------------------+---------+
+| Metric              | Value   |
++=====================+=========+
+| accuracy            | 53.33%  |
++---------------------+---------+
+| precision           | 0.00%   |
++---------------------+---------+
+| recall              | 0.00%   |
++---------------------+---------+
+| f1_score            | 0.00%   |
++---------------------+---------+
+| total_predictions   | 30      |
++---------------------+---------+
+| correct_predictions | 16      |
++---------------------+---------+
+
+## Key Findings and Recommendations
+
+### Findings:
+
+1. Average MAPE across all periods: 1.54%
+2. Average directional accuracy: 55.00%
+3. Average 80% confidence interval coverage: 71.67%
+4. Average 95% confidence interval coverage: 88.33%
+
+### Recommendations:
+
+1. ✗ Directional accuracy near random - use with caution
+2. ✓ Price magnitude predictions are quite accurate
+3. ~ Confidence intervals may be too narrow - consider wider levels
+
+### Use Cases:
+
+- **Short-term forecasting (1-7 days)**: Best performance observed
+- **Directional trading**: Use directional predictions with proper risk management
+- **Risk management**: Leverage confidence intervals for position sizing
+- **Trend analysis**: Combine with technical indicators for enhanced signals
+
+================================================================================
+
+================================================================================
+Analysis complete! Results saved to the 'results' directory.
+
+REAL RESULTS - No simulation, actual Bitcoin data with StatsForecast
+
+Summary of Findings:
+--------------------------------------------------------------------------------
+
+Recent Period (Last 90 days):
+  MAPE: 1.87%
+  MAE: $2131.50
+  Directional Accuracy: 56.7%
+  ✓ Better than random (50%)
+  ✓ Excellent price accuracy (<10% MAPE)
+
+Mid-term (6 months ago):
+  MAPE: 1.21%
+  MAE: $1280.93
+  Directional Accuracy: 53.3%
+  ✓ Better than random (50%)
+  ✓ Excellent price accuracy (<10% MAPE)
+
+================================================================================
