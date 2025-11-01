@@ -17,5 +17,9 @@
 
 ## Status
 - Modified .gitignore files to allow committing outputs
-- Ran trading_forecast.py successfully - got CSV and console output
-- Next: commit trading forecast, then run main.py and backtest_4year.py
+- Completed all 3 live runs:
+  1. trading_forecast.py - 7-day forecast with trading signals
+  2. main.py - Recent + Mid-term backtests with visualizations
+  3. backtest_4year.py - Comprehensive 4-year analysis
+- Generated 19 files (CSVs, PNGs, TXTs)
+- Ready to commit all results

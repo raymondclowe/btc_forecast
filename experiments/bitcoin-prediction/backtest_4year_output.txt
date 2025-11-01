@@ -1,0 +1,98 @@
+================================================================================
+Bitcoin Price Prediction - 4-Year Backtesting Tool
+NO API KEY REQUIRED - Open Source (StatsForecast)
+================================================================================
+
+Step 1: Loading Bitcoin price data...
+✓ Loaded 5530 days of Bitcoin price history
+  Full date range: 2010-07-18 to 2025-10-31
+
+Step 2: Filtering data to last 4 years...
+✓ Filtered to last 4 years of data
+  Date range: 2021-11-01 to 2025-10-31
+  Total days: 1424
+  Price range: $10719.00 to $124658.54
+
+Step 3: Initializing StatsForecast backtester...
+  Model: AutoARIMA + AutoETS (ensemble)
+  Approach: Walk-forward validation
+
+Step 4: Running 4-year walk-forward backtest...
+  This will take several minutes to complete...
+
+  Start date: 2021-11-01
+  End date: 2025-10-31
+  Training window: 180 days
+  Forecast horizon: 1 day
+  Step size: 7 days
+
+✓ Generated 178 predictions over 4-year period
+
+✓ Raw results saved to: results/backtest_4year_results.csv
+
+Step 5: Calculating performance metrics...
+
+================================================================================
+4-YEAR BACKTESTING RESULTS SUMMARY
+================================================================================
+
+📊 ACCURACY METRICS:
+--------------------------------------------------------------------------------
+  Mean Absolute Error (MAE):        $898.59
+  Root Mean Square Error (RMSE):    $1,374.55
+  Mean Absolute % Error (MAPE):     1.59%
+  Median Absolute % Error:          1.09%
+  Standard Deviation of Error:      $1,370.05
+  Mean Error (Bias):                $151.31
+
+🎯 DIRECTIONAL ACCURACY:
+--------------------------------------------------------------------------------
+  Direction Accuracy:               42.13%
+  Precision:                        0.00%
+  Recall:                           0.00%
+  F1 Score:                         0.00%
+  Correct Predictions:              75/178
+
+📈 CONFIDENCE INTERVAL COVERAGE:
+--------------------------------------------------------------------------------
+  80% Interval Coverage:            86.52%
+  95% Interval Coverage:            95.51%
+
+📋 PREDICTION DETAILS:
+--------------------------------------------------------------------------------
+  Total Predictions:                178
+  Time Period:                      4 years
+  Forecast Horizon:                 1 day ahead
+  Model Used:                       AutoARIMA + AutoETS Ensemble
+
+🏆 OVERALL PERFORMANCE SCORE:
+--------------------------------------------------------------------------------
+  Price Accuracy Score:             84.1/100
+  Direction Accuracy Score:         42.1/100
+  Calibration Score:                95.5/100
+
+  🎯 OVERALL SCORE:                  69.6/100
+
+  Rating: ⭐⭐⭐ GOOD
+
+Step 6: Generating visualizations...
+
+  ✓ Forecast vs Actual plot saved
+  ✓ Error distribution plot saved
+  ✓ Simple performance summary saved
+
+Step 7: Generating comprehensive report...
+✓ Comprehensive report saved to: results/backtest_4year_report.txt
+
+================================================================================
+ANALYSIS COMPLETE!
+================================================================================
+
+Generated files in 'results/' directory:
+  - backtest_4year_results.csv          (Raw prediction data)
+  - backtest_4year_report.txt           (Comprehensive text report)
+  - forecast_vs_actual_4year.png        (Visual comparison)
+  - error_distribution_4year.png        (Error analysis)
+  - simple_summary_4year.png            (Performance summary)
+
+================================================================================
