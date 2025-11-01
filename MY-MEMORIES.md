@@ -16,5 +16,6 @@
 - Need to modify .gitignore to allow committing outputs
 
 ## Status
-- Fresh clone, working tree clean
-- About to run live forecasts and commit results
+- Modified .gitignore files to allow committing outputs
+- Ran trading_forecast.py successfully - got CSV and console output
+- Next: commit trading forecast, then run main.py and backtest_4year.py

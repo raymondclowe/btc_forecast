@@ -18,6 +18,13 @@ results/
 *.csv
 *.txt
 
+# But DO include live forecast outputs (for issue: live and commit reports and graphs)
+!trading_forecast.csv
+!forecast_output.txt
+!results/*.png
+!results/*.csv
+!results/*.txt
+
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb_checkpoints
